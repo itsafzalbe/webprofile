@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: ./backend
+    container_name: avzalbek_backend
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./backend:/app
+
+    env_file:
+      - ./backend/.env
+
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:7
+    container_name: avzalbek_mongodb
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
