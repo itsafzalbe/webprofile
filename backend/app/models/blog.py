@@ -2,6 +2,7 @@ from beanie import Document
 from pydantic import Field
 from datetime import datetime
 from typing import Optional, List
+from pymongo import IndexModel, TEXT
 
 class BlogPost(Document):
     title: str = Field(index=True)
@@ -19,4 +20,19 @@ class BlogPost(Document):
 
     class Settings:
         name = "blog_posts"
-        indexes = ["slug", "tags", "category", "is_published"]
+        indexes = [
+            "slug", 
+            "tags", 
+            "category", 
+            "is_published",
+            IndexModel(
+                [
+                    ("title", TEXT),
+                    ("excerpt", TEXT),
+                    ("content", TEXT),
+                    ("tags", TEXT),
+                    ("category", TEXT),
+                ],
+                name="blog_text_index",
+            ),
+        ]

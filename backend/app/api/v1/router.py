@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, projects, blog, contact, github
+from app.api.v1 import auth, projects, blog, contact, github, search
 
 router = APIRouter(prefix="/api/v1")
 
@@ -8,6 +8,7 @@ router.include_router(projects.router)
 router.include_router(blog.router)
 router.include_router(contact.router)
 router.include_router(github.router)
+router.include_router(search.router)
 
 
 

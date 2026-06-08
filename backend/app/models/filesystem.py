@@ -2,6 +2,7 @@ from beanie import Document
 from pydantic import Field
 from datetime import datetime
 from typing import Optional, List
+from pymongo import IndexModel, TEXT
 
 
 class FileSystemNode(Document):
@@ -21,5 +22,18 @@ class FileSystemNode(Document):
 
     class Settings:
         name = "filesystem"
-        indexes = ["path", "parent_path", "node_type", "is_hidden"]
+        indexes = [
+            "path", 
+            "parent_path", 
+            "node_type", 
+            "is_hidden",
+            IndexModel(
+                [
+                    ("name", TEXT),
+                    ("content", TEXT),
+                    ("path", TEXT),
+                ],
+                name="filesystem_text_index",
+            ),
+        ]
 

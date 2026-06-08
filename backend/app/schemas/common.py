@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 class SuccessResponse(BaseModel):
     success: bool = True
@@ -18,3 +18,19 @@ class PaginatedResponse(BaseModel):
     per_page: int
     total_pages: int
 
+class SearchResult(BaseModel):
+    type: str       # "project" | "blog" | "file" | "skill"
+    title: str
+    excerpt: str
+    slug: Optional[str] = None
+    path: Optional[str] = None
+    tags: List[str] = []
+    url: Optional[str] = None
+    score: float = 0.0
+
+
+class SearchResponse(BaseModel):
+    query: str
+    total: int
+    results: List[SearchResult]
+    took_ms: float
