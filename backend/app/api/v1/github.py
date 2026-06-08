@@ -1,0 +1,69 @@
+from fastapi import APIRouter, HTTPException, status, Query, Depends
+from app.services import github_service
+from app.api.deps import get_admin_user
+from app.models.user import User
+
+router = APIRouter(prefix="/github", tags=["github"])
+
+@router.get("/profile")
+async def get_profile():
+    profile = await github_service.get_profile()
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="GitHub API unavailable",
+        )
+    return profile
+
+@router.get("/repos")
+async def get_repos(
+    sort: str = Query("updated", pattern="^(updated|stars|created)$"),
+    limit: int = Query(10, ge=1, le=30),
+):
+    return await github_service.get_repos(sort=sort, limit=limit)
+
+@router.get("/pinned")
+async def get_pinned():
+    return await github_service.get_pinned_repos()
+
+@router.get("/contributions")
+async def get_contributions():
+    data = await github_service.get_contribution_stats()
+    if not data:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="GitHub API unavailable",
+        )
+    return data
+
+
+
+@router.get("/repos/{repo}/commits")
+async def get_commits(
+    repo: str,
+    limit: int = Query(10, ge=1, le=30),
+):
+    return await github_service.get_recent_commits(repo, limit=limit)
+
+@router.get("/repos/{repo}/languages")
+async def get_languages(repo: str):
+    return await github_service.get_repo_languages(repo)
+
+
+#admin only
+@router.post("/cache/clear")
+async def clear_cache(admin: User = Depends(get_admin_user)):
+    from app.database import get_redis
+    redis = get_redis()
+    if not redis:
+        return {"message": "Redis not available"}
+    
+    keys = await redis.keys("github:*")
+    if keys:
+        await redis.delete(*keys)
+    
+    return {"message": f"Cleared {len(keys)} cached GitHub entries"}
+
+
+
+
