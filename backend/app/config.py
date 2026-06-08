@@ -3,7 +3,7 @@ from functools import lru_cache
 from typing import List
 
 class Settings(BaseSettings):
-    APP_NAME: str = "AFZALBEK OS"
+    APP_NAME: str = "TWP (@itsafzalbe)"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
