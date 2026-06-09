@@ -51,18 +51,24 @@ async def init_db():
     from app.models.contact import ContactMessage
     from app.models.analytics import VisitorSession, CommandLog
     from app.models.filesystem import FileSystemNode
+    from app.models.profile import Profile
+    from app.models.achievement import Achievement
+    from app.models.experience import Experience
 
     client = await connect_mongodb()
     await init_beanie(
         database=client[settings.MONGODB_DB_NAME],
         document_models=[
-            User, 
+            User,
             Project,
             BlogPost,
             ContactMessage,
             VisitorSession,
             CommandLog,
             FileSystemNode,
+            Profile,
+            Achievement,
+            Experience,
         ],
     )
     logger.info("Beanie ODM initialized")
