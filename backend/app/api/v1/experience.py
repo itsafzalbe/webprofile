@@ -5,10 +5,12 @@ from app.services import experience_service
 from app.api.deps import get_admin_user
 from app.models.user import User
 from typing import List, Optional
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/experience", tags=["experience"])
 
 @router.get("", response_model=List[ExperienceResponse])
+@limiter.limit("30/minute")
 async def list_experience(
     type: Optional[str] = Query(
         None,

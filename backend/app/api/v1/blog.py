@@ -5,6 +5,7 @@ from app.services import blog_service
 from app.api.deps import get_admin_user
 from app.models.user import User
 from typing import Optional, List
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/blog", tags=["blog"])
 
@@ -12,6 +13,7 @@ router = APIRouter(prefix="/blog", tags=["blog"])
 
 #public apis
 @router.get("", response_model=dict)
+@limiter.limit("60/minute")
 async def list_posts(
     tag: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
@@ -28,16 +30,19 @@ async def list_posts(
     )
 
 @router.get("/tags", response_model=List[str])
+@limiter.limit("60/minute")
 async def list_tags():
     return await blog_service.get_all_tags()
 
 
 @router.get("/categories", response_model=List[str])
+@limiter.limit("60/minute")
 async def list_categories():
     return await blog_service.get_all_categories()
 
 
 @router.get("/{slug}", response_model=BlogPostResponse)
+@limiter.limit("30/minute")
 async def get_post(slug: str):
     post = await blog_service.get_post_by_slug(slug, increment_view=True)
     if not post:
@@ -48,6 +53,7 @@ async def get_post(slug: str):
     return post
 
 @router.get("/{slug}/related", response_model=List[BlogPostListResponse])
+@limiter.limit("30/minute")
 async def get_related(slug: str, limit: int = Query(3, ge=1, le=10)):
     return await blog_service.get_related_posts(slug, limit=limit)
 

@@ -3,11 +3,13 @@ from app.services import filesystem_service
 from app.api.deps import get_admin_user
 from app.models.user import User
 from typing import Optional
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/filesystem", tags=["filesystem"])
 
 # Public terminal commands
 @router.get("/ls")
+@limiter.limit("60/minute")
 async def ls(
     path: str = Query("/home/afzalbe"),
     hidden: bool = Query(False),
@@ -28,6 +30,7 @@ async def cd(
     return result
 
 @router.get("/cat")
+@limiter.limit("60/minute")
 async def cat(path: str = Query(...), current: str = Query("/home/afzalbe")):
     result = await filesystem_service.cat(path, current_path=current)
     if "error" in result:
@@ -35,6 +38,7 @@ async def cat(path: str = Query(...), current: str = Query("/home/afzalbe")):
     return result
 
 @router.get("/tree")
+@limiter.limit("20/minute")
 async def tree(
     path: str = Query("home/afzalbe"),
     hidden: bool = Query(False),
@@ -57,6 +61,7 @@ async def tree(
     }
         
 @router.get("/pwd")
+@limiter.limit("60/minute")
 async def pwd(path: str = Query("/home/afzalbe")):
     return await filesystem_service.pwd(path)
 

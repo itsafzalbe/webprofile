@@ -1,11 +1,22 @@
+import asyncio
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.config import settings
 from app.database import init_db, connect_redis, close_db
 from app.api.v1.router import router
-import asyncio
-import logging
+from app.core.middleware import (
+    RequestLoggingMiddleware,
+    SessionMiddleware,
+    SecurityHeadersMiddleware,
+)
+from app.core.exceptions import register_exception_handlers
+from app.utils.rate_limiter import limiter, rate_limit_exceeded_handler
+from app.websockets.manager import manager
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 logging.basicConfig(
     level=logging.DEBUG if settings.DEBUG else logging.INFO,
@@ -43,12 +54,17 @@ async def lifespan(app: FastAPI):
     from app.services.auth_service import get_or_create_admin
     await get_or_create_admin()
 
-    broadcaster = asyncio.create_task(analytics_broadcaster())
-    cleanup = asyncio.create_task(session_cleanup())
-    yield
+    tasks =[
+        asyncio.create_task(analytics_broadcaster),
+        asyncio.create_task(session_cleanup),
+    ]
 
-    broadcaster.cancel()
-    cleanup.cancel()
+    logger.info("All systems online")
+    yield
+    for task in tasks:
+        tasks.cancel()
+
+
     await close_db()
     logger.info("Shutdown complete")
 
@@ -64,6 +80,13 @@ app = FastAPI(
     redoc_url="/redoc" if settings.DEBUG else None,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(SessionMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -72,6 +95,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+register_exception_handlers(app)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 app.include_router(router)
 

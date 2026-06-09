@@ -5,11 +5,13 @@ from app.api.deps import get_admin_user
 from app.websockets.analytics_ws import analytics_ws_handler
 from app.models.user import User
 from typing import Optional
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 # PUBLIC session tracking
 @router.post("/session")
+@limiter.limit("30/minute")
 async def track_session(request: Request):
     session_id = request.headers.get("X-Session-ID")
     ip = request.client.host if request.client else None
@@ -25,6 +27,7 @@ async def track_session(request: Request):
     return {"session_id": new_session_id}
 
 @router.post("/command")
+@limiter.limit("120/minute")
 async def track_command(
     request: Request,
     command: str = Query(min_length=1, max_length=100),

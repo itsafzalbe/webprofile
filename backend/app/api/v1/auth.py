@@ -11,11 +11,13 @@ from app.api.deps import get_current_user, get_admin_user
 from app.utils.cache import blacklist_token
 from app.models.user import User
 from datetime import datetime
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login", response_model=TokenResponse)
+@limiter.limit("5/minute")
 async def login(payload: LoginRequest):
     user = await authenticate_user(payload.username, payload.password)
     if not user:
@@ -37,6 +39,7 @@ async def login(payload: LoginRequest):
     )
 
 @router.post("/refresh", response_model=dict)
+@limiter.limit("10/minute")
 async def refresh(payload: RefreshRequest):
     result = await refresh_access_token(payload.refresh_token)
     if not result:
@@ -48,6 +51,7 @@ async def refresh(payload: RefreshRequest):
 
 
 @router.get("/me", response_model=UserResponse)
+@limiter.limit("30/minute")
 async def get_me(current_user: User = Depends(get_current_user)):
     return UserResponse(
         username=current_user.username,
@@ -74,6 +78,7 @@ async def logout(request: Request, current_user: User = Depends(get_current_user
 
 
 @router.get("/verify")
+@limiter.limit("20/minute")
 async def verify_token(current_user: User = Depends(get_admin_user)):
     return {"valid": True, "username": current_user.username, "is_admin": current_user.is_admin}
 

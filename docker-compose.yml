@@ -1,28 +1,52 @@
 services:
+
   backend:
-    build: ./backend
-    container_name: avzalbek_backend
+    build: .
+    container_name: afzalbe_os_backend
     ports:
       - "8000:8000"
-
-    volumes:
-      - ./backend:/app
-
     env_file:
-      - ./backend/.env
-
+      - .env
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - REDIS_URL=redis://redis:6379
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./static:/app/static
+    restart: unless-stopped
 
   mongodb:
     image: mongo:7
-    container_name: avzalbek_mongodb
-
+    container_name: afzalbe_os_mongo
     ports:
       - "27017:27017"
-
     volumes:
-      - mongodb_data:/data/db
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: afzalbe_os_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
 volumes:
-  mongodb_data:
+  mongo_data:
+  redis_data:

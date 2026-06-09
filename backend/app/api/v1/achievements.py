@@ -4,15 +4,18 @@ from app.schemas.achievement import AchievementCreate, AchievementResponse, Achi
 from app.services import achievement_service
 from app.api.deps import get_admin_user
 from app.models.user import User
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/achievements", tags=["achievements"])
 
 @router.get("", response_model=List[AchievementResponse])
+@limiter.limit("60/minute")
 async def list_achievements():
     return await achievement_service.get_all_achievements(include_hidden=False)
 
 
 @router.get("/{achievement_id}", response_model=AchievementResponse)
+@limiter.limit("30/minute")
 async def get_achievement(achievement_id: str):
     achievement = await achievement_service.get_achievement_by_id(achievement_id)
     if not achievement:

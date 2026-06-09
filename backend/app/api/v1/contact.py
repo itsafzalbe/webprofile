@@ -4,6 +4,7 @@ from app.schemas.common import SuccessResponse
 from app.services import contact_service
 from app.api.deps import get_admin_user
 from app.models.user import User
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/contact", tags=["contact"])
 
@@ -12,6 +13,7 @@ router = APIRouter(prefix="/contact", tags=["contact"])
 
 # PUBLIC ROUTES
 @router.post("", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("3/hour")
 async def send_message(payload: ContactCreate, request: Request):
     ip = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent")

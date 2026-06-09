@@ -4,11 +4,13 @@ from app.schemas.common import SuccessResponse
 from app.services import profile_service
 from app.api.deps import get_admin_user
 from app.models.user import User
+from app.utils.rate_limiter import limiter
 
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
 @router.get("", response_model=ProfileResponse)
+@limiter.limit("30/minute")
 async def get_profile():
     profile = await profile_service.get_profile()
     if not profile:
@@ -19,11 +21,13 @@ async def get_profile():
     return profile
 
 @router.get("/whoami")
+@limiter.limit("60/minute")
 async def whoami():
     text = await profile_service.get_whoami()
     return {"output": text}
 
 
+#admin
 @router.post("", response_model=ProfileResponse, status_code=status.HTTP_201_CREATED)
 async def create_profile(payload: ProfileCreate, admin: User = Depends(get_admin_user)):
     try:

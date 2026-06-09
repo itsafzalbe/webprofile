@@ -2,10 +2,12 @@ from fastapi import APIRouter, HTTPException, status, Query, Depends
 from app.services import github_service
 from app.api.deps import get_admin_user
 from app.models.user import User
+from app.utils.rate_limiter import limiter
 
 router = APIRouter(prefix="/github", tags=["github"])
 
 @router.get("/profile")
+@limiter.limit("10/minute")
 async def get_profile():
     profile = await github_service.get_profile()
     if not profile:
@@ -16,6 +18,7 @@ async def get_profile():
     return profile
 
 @router.get("/repos")
+@limiter.limit("10/minute")
 async def get_repos(
     sort: str = Query("updated", pattern="^(updated|stars|created)$"),
     limit: int = Query(10, ge=1, le=30),
@@ -23,10 +26,12 @@ async def get_repos(
     return await github_service.get_repos(sort=sort, limit=limit)
 
 @router.get("/pinned")
+@limiter.limit("10/minute")
 async def get_pinned():
     return await github_service.get_pinned_repos()
 
 @router.get("/contributions")
+@limiter.limit("5/minute")
 async def get_contributions():
     data = await github_service.get_contribution_stats()
     if not data:
@@ -39,6 +44,7 @@ async def get_contributions():
 
 
 @router.get("/repos/{repo}/commits")
+@limiter.limit("10/minute")
 async def get_commits(
     repo: str,
     limit: int = Query(10, ge=1, le=30),
