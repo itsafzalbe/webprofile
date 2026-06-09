@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi import APIRouter, HTTPException, status, Depends, Query, Request
 from app.schemas.experience import ExperienceCreate, ExperienceUpdate, ExperienceResponse
 from app.schemas.common import SuccessResponse
 from app.services import experience_service
@@ -12,6 +12,7 @@ router = APIRouter(prefix="/experience", tags=["experience"])
 @router.get("", response_model=List[ExperienceResponse])
 @limiter.limit("30/minute")
 async def list_experience(
+    request: Request, 
     type: Optional[str] = Query(
         None,
         pattern="^(work|education|volunteer)$"

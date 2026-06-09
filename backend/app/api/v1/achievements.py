@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Request
 from typing import List
 from app.schemas.achievement import AchievementCreate, AchievementResponse, AchievementUpdate
 from app.services import achievement_service
@@ -10,13 +10,13 @@ router = APIRouter(prefix="/achievements", tags=["achievements"])
 
 @router.get("", response_model=List[AchievementResponse])
 @limiter.limit("60/minute")
-async def list_achievements():
+async def list_achievements(request: Request):
     return await achievement_service.get_all_achievements(include_hidden=False)
 
 
 @router.get("/{achievement_id}", response_model=AchievementResponse)
 @limiter.limit("30/minute")
-async def get_achievement(achievement_id: str):
+async def get_achievement(request: Request, achievement_id: str):
     achievement = await achievement_service.get_achievement_by_id(achievement_id)
     if not achievement:
         raise HTTPException(

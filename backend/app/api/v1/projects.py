@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi import APIRouter, HTTPException, status, Depends, Query, Request
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse
 from app.schemas.common import SuccessResponse, PaginatedResponse
 from app.services import project_service
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 # public apis
 @router.get("", response_model=List[ProjectResponse])
 @limiter.limit("60/minute")
-async def list_projects(tag: Optional[str] = Query(None), featured: bool = Query(False)):
+async def list_projects(request: Request, tag: Optional[str] = Query(None), featured: bool = Query(False)):
     return await project_service.get_all_projects(
         published_only=True,
         tag=tag,
@@ -24,13 +24,13 @@ async def list_projects(tag: Optional[str] = Query(None), featured: bool = Query
 
 @router.get("/tags", response_model=List[str])
 @limiter.limit("60/minute")
-async def list_tags():
+async def list_tags(request: Request,):
     return await project_service.get_all_tags()
 
 
 @router.get("/{slug}", response_model=ProjectResponse)
 @limiter.limit("30/minute")
-async def get_project(slug: str):
+async def get_project(request: Request, slug: str):
     project = await project_service.get_project_by_slug(slug, increment_view=True)
     if not project:
         raise HTTPException(

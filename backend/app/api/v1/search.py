@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 from app.services import search_service
 from app.schemas.common import SearchResponse
 from typing import Optional
@@ -9,6 +9,7 @@ router = APIRouter(prefix="/search", tags=["search"])
 @router.get("", response_model=SearchResponse)
 @limiter.limit("30/minute")
 async def search(
+    request: Request,
     q: str = Query(min_length=1, max_length=100),
     type: Optional[str] = Query(
         "all",
@@ -22,6 +23,7 @@ async def search(
 @router.get("/suggestions")
 @limiter.limit("60/minute")
 async def suggestions(
+    request: Request,
     q: str = Query(min_length=1, max_length=50),
     limit: int = Query(5, ge=1, le=10),
 ):

@@ -55,14 +55,14 @@ async def lifespan(app: FastAPI):
     await get_or_create_admin()
 
     tasks =[
-        asyncio.create_task(analytics_broadcaster),
-        asyncio.create_task(session_cleanup),
+        asyncio.create_task(analytics_broadcaster()),
+        asyncio.create_task(session_cleanup()),
     ]
 
     logger.info("All systems online")
     yield
     for task in tasks:
-        tasks.cancel()
+        task.cancel()
 
 
     await close_db()

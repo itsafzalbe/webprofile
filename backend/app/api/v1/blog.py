@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi import APIRouter, HTTPException, status, Depends, Query, Request
 from app.schemas.blog import BlogPostCreate, BlogPostUpdate, BlogPostResponse, BlogPostListResponse
 from app.schemas.common import SuccessResponse
 from app.services import blog_service
@@ -15,6 +15,7 @@ router = APIRouter(prefix="/blog", tags=["blog"])
 @router.get("", response_model=dict)
 @limiter.limit("60/minute")
 async def list_posts(
+    request: Request,
     tag: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     limit: int = Query(20, ge=1, le=100),
@@ -31,19 +32,19 @@ async def list_posts(
 
 @router.get("/tags", response_model=List[str])
 @limiter.limit("60/minute")
-async def list_tags():
+async def list_tags(request: Request):
     return await blog_service.get_all_tags()
 
 
 @router.get("/categories", response_model=List[str])
 @limiter.limit("60/minute")
-async def list_categories():
+async def list_categories(request: Request):
     return await blog_service.get_all_categories()
 
 
 @router.get("/{slug}", response_model=BlogPostResponse)
 @limiter.limit("30/minute")
-async def get_post(slug: str):
+async def get_post(request: Request, slug: str):
     post = await blog_service.get_post_by_slug(slug, increment_view=True)
     if not post:
         raise HTTPException(
@@ -54,7 +55,7 @@ async def get_post(slug: str):
 
 @router.get("/{slug}/related", response_model=List[BlogPostListResponse])
 @limiter.limit("30/minute")
-async def get_related(slug: str, limit: int = Query(3, ge=1, le=10)):
+async def get_related(request: Request, slug: str, limit: int = Query(3, ge=1, le=10)):
     return await blog_service.get_related_posts(slug, limit=limit)
 
 

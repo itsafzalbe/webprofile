@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Request
 from app.schemas.profile import ProfileCreate, ProfileUpdate, ProfileResponse
 from app.schemas.common import SuccessResponse
 from app.services import profile_service
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/profile", tags=["profile"])
 
 @router.get("", response_model=ProfileResponse)
 @limiter.limit("30/minute")
-async def get_profile():
+async def get_profile(request: Request,):
     profile = await profile_service.get_profile()
     if not profile:
         raise HTTPException(
@@ -22,7 +22,7 @@ async def get_profile():
 
 @router.get("/whoami")
 @limiter.limit("60/minute")
-async def whoami():
+async def whoami(request: Request,):
     text = await profile_service.get_whoami()
     return {"output": text}
 

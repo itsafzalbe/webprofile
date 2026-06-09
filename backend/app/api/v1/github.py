@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Query, Depends
+from fastapi import APIRouter, HTTPException, status, Query, Depends, Request
 from app.services import github_service
 from app.api.deps import get_admin_user
 from app.models.user import User
@@ -8,7 +8,7 @@ router = APIRouter(prefix="/github", tags=["github"])
 
 @router.get("/profile")
 @limiter.limit("10/minute")
-async def get_profile():
+async def get_profile(request: Request):
     profile = await github_service.get_profile()
     if not profile:
         raise HTTPException(
@@ -20,6 +20,7 @@ async def get_profile():
 @router.get("/repos")
 @limiter.limit("10/minute")
 async def get_repos(
+    request: Request,
     sort: str = Query("updated", pattern="^(updated|stars|created)$"),
     limit: int = Query(10, ge=1, le=30),
 ):
@@ -27,12 +28,12 @@ async def get_repos(
 
 @router.get("/pinned")
 @limiter.limit("10/minute")
-async def get_pinned():
+async def get_pinned(request: Request, ):
     return await github_service.get_pinned_repos()
 
 @router.get("/contributions")
 @limiter.limit("5/minute")
-async def get_contributions():
+async def get_contributions(request: Request, ):
     data = await github_service.get_contribution_stats()
     if not data:
         raise HTTPException(
@@ -46,13 +47,15 @@ async def get_contributions():
 @router.get("/repos/{repo}/commits")
 @limiter.limit("10/minute")
 async def get_commits(
+    request: Request, 
     repo: str,
     limit: int = Query(10, ge=1, le=30),
 ):
     return await github_service.get_recent_commits(repo, limit=limit)
 
 @router.get("/repos/{repo}/languages")
-async def get_languages(repo: str):
+@limiter.limit("10/minute")
+async def get_languages(request: Request, repo: str):
     return await github_service.get_repo_languages(repo)
 
 

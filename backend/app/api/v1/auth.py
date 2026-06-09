@@ -18,7 +18,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("5/minute")
-async def login(payload: LoginRequest):
+async def login(request: Request, payload: LoginRequest):
     user = await authenticate_user(payload.username, payload.password)
     if not user:
         raise HTTPException(
@@ -40,7 +40,7 @@ async def login(payload: LoginRequest):
 
 @router.post("/refresh", response_model=dict)
 @limiter.limit("10/minute")
-async def refresh(payload: RefreshRequest):
+async def refresh(request: Request, payload: RefreshRequest):
     result = await refresh_access_token(payload.refresh_token)
     if not result:
         raise HTTPException(
@@ -52,7 +52,7 @@ async def refresh(payload: RefreshRequest):
 
 @router.get("/me", response_model=UserResponse)
 @limiter.limit("30/minute")
-async def get_me(current_user: User = Depends(get_current_user)):
+async def get_me(request: Request, current_user: User = Depends(get_current_user)):
     return UserResponse(
         username=current_user.username,
         is_admin=current_user.is_admin,
@@ -79,7 +79,7 @@ async def logout(request: Request, current_user: User = Depends(get_current_user
 
 @router.get("/verify")
 @limiter.limit("20/minute")
-async def verify_token(current_user: User = Depends(get_admin_user)):
+async def verify_token(request: Request, current_user: User = Depends(get_admin_user)):
     return {"valid": True, "username": current_user.username, "is_admin": current_user.is_admin}
 
 

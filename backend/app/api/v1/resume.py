@@ -1,5 +1,5 @@
 import os
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Request
 from fastapi.responses import FileResponse
 from app.utils.rate_limiter import limiter
 
@@ -8,7 +8,7 @@ RESUME_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "static"
 
 @router.get("/download")
 @limiter.limit("10/hour")
-async def download_resume():
+async def download_resume(request: Request,):
     abs_path = os.path.abspath(RESUME_PATH)
     if not os.path.exists(abs_path):
         raise HTTPException(
@@ -23,7 +23,7 @@ async def download_resume():
 
 @router.get("/info")
 @limiter.limit("10/minute")
-async def resume_info():
+async def resume_info(request: Request,):
     abs_path = os.path.abspath(RESUME_PATH)
     if not os.path.exists(abs_path):
         return {"available": False, "message": "Resume not uploaded yet"}
