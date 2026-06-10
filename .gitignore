@@ -33,7 +33,7 @@ Thumbs.db
 logs/
 
 #staticfiles
-static
+
 
 #docker
 *.override.yml

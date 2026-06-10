@@ -245,8 +245,8 @@ export default function Terminal() {
     <div
       key={i}
       style={{
-        width: "11px",
-        height: "11px",
+        width: "20px",
+        height: "20px",
         borderRadius: "2px",
         background: btn.bg,
         border: "1px solid #111",
@@ -264,7 +264,7 @@ export default function Terminal() {
   ))}
 </div>
         <span style={{
-          flex:1, textAlign:"center", fontSize:"12px",
+          flex:1, textAlign:"center", fontSize:"20px",
           color: theme.muted, fontFamily: mono,
           letterSpacing: isRetro ? "0.15em" : "0.05em",
           textTransform: isRetro ? "uppercase" : "none",
@@ -280,7 +280,7 @@ export default function Terminal() {
           flex:      1,
           overflowY: "auto",
           padding:   "16px 20px",
-          fontSize:  "13px",
+          fontSize:  "25px",
           lineHeight: isRetro ? "1.9" : "1.7",
         }}
       >
@@ -298,7 +298,7 @@ export default function Terminal() {
               <span style={{
                 position:"absolute", left:0, top:"50%", transform:"translateY(-50%)",
                 color:theme.muted, pointerEvents:"none",
-                whiteSpace:"pre", fontSize:"13px", fontFamily:mono,
+                whiteSpace:"pre", fontSize:"25px", fontFamily:mono,
               }}>
                 {inputValue}
                 <span style={{ opacity:0.35 }}>{suggestion.slice(inputValue.length)}</span>
@@ -318,7 +318,7 @@ export default function Terminal() {
                 outline:    "none",
                 color:      theme.text,
                 caretColor: theme.cursor,
-                fontSize:   "13px",
+                fontSize:   "25px",
                 fontFamily: mono,
                 lineHeight: isRetro ? "1.9" : "1.7",
                 width:      "100%",
@@ -393,7 +393,7 @@ function Prompt({ path, theme, mono }) {
   return (
     <span style={{ display:"flex", alignItems:"center", gap:"4px", flexShrink:0, marginRight:"6px", userSelect:"none" }}>
       <Segment label="afzalbe" color={theme.user} />
-      <span style={{ color:theme.muted, fontSize:"11px" }}>in</span>
+      <span style={{ color:theme.muted, fontSize:"25px" }}>in</span>
       <Segment label={path} color={theme.path} />
       <span style={{ color:theme.accent, fontWeight:"bold", margin:"0 4px" }}>→</span>
     </span>
@@ -407,7 +407,7 @@ function Segment({ label, color }) {
       color:           color,
       padding:         "0px 7px",
       borderRadius:    "3px",
-      fontSize:        "12px",
+      fontSize:        "25px",
       fontWeight:      600,
     }}>{label}</span>
   )

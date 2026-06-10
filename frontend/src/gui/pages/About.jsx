@@ -74,12 +74,25 @@ export default function About() {
                   📍 {profile.location}
                 </span>
               )}
-              {profile?.social_links && Object.entries(profile.social_links).map(([platform, url]) => url && (
-                <a key={platform} href={url} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize:"12px", color:t.accent, textDecoration:"none", textTransform:"capitalize" }}>
-                  {platform} ↗
-                </a>
-              ))}
+             {(() => {
+                const links = profile?.social_links
+                if (!links) return null
+
+                // Handle array shape: [{platform, url}, ...]
+                // Handle object shape: {github: "...", linkedin: "..."}
+                const entries = Array.isArray(links)
+                  ? links.map(l => [l.platform, l.url])
+                  : Object.entries(links)
+
+                return entries
+                  .filter(([, url]) => url)
+                  .map(([platform, url]) => (
+                    <a key={platform} href={url} target="_blank" rel="noopener noreferrer"
+                      style={{ fontSize:"12px", color:t.accent, textDecoration:"none", textTransform:"capitalize" }}>
+                      {platform} ↗
+                    </a>
+                  ))
+              })()}
             </div>
           </div>
         </div>
@@ -94,19 +107,32 @@ export default function About() {
       )}
 
       {/* Skills */}
-      {profile?.skills_summary && Object.keys(profile.skills_summary).length > 0 && (
-        <motion.section initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3, delay:0.1 }} style={{ marginBottom:"40px" }}>
+      {profile?.skills_summary?.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          style={{ marginBottom: "40px" }}
+        >
           <div style={s.sectionLabel}>Skills</div>
-          <div style={{ display:"flex", flexDirection:"column", gap:"14px" }}>
-            {Object.entries(profile.skills_summary).map(([category, skills]) => (
-              <div key={category}>
-                <div style={{ fontSize:"11px", color:t.textFaint, fontWeight:500, letterSpacing:"0.06em", textTransform:"uppercase", marginBottom:"8px" }}>{category}</div>
-                <div style={{ display:"flex", flexWrap:"wrap", gap:"6px" }}>
-                  {(Array.isArray(skills) ? skills : [skills]).map(skill => (
-                    <span key={skill} style={{ ...s.tagNeutral, borderRadius:"6px" }}>{skill}</span>
-                  ))}
-                </div>
-              </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            {profile.skills_summary.map((skill, i) => (
+              <span
+                key={i}
+                style={{
+                  fontSize:        "13px",
+                  padding:         "6px 14px",
+                  borderRadius:    "8px",
+                  background:      t.surface,
+                  border:          `1px solid ${t.glassBorder}`,
+                  color:           t.text,
+                  fontWeight:      500,
+                  letterSpacing:   "0.01em",
+                  transition:      "border-color 0.15s",
+                }}
+              >
+                {skill}
+              </span>
             ))}
           </div>
         </motion.section>
