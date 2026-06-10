@@ -58,7 +58,7 @@ async def ls(path: str, show_hidden: bool = False) -> dict:
                 "modified_at": c.modified_at,
                 "is_hidden":   c.is_hidden,
             }
-            for c in dir + files
+            for c in dirs + files
         ],
     }
     

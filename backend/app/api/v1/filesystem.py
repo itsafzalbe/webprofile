@@ -131,7 +131,7 @@ async def update_node(path: str = Query(...), payload: dict = None, admin: User 
             if field in payload:
                 setattr(node, field, payload[field])
     
-    node.modefied_at = datetime.utcnow()
+    node.modified_at = datetime.utcnow()
     await node.save()
     return {"updated": True, "node": filesystem_service._format(node)}
 

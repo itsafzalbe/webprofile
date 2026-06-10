@@ -202,7 +202,7 @@ async def search(query: str, search_type: str = "all") -> dict:
         results.extend(await _search_blog(query))
 
     if search_type in ("all", "skills"):
-        results.extend(await _search_skills(query))
+        results.extend( _search_skills(query))
 
     if search_type in ("all", "files"):
         results.extend(await _search_filesystem(query))

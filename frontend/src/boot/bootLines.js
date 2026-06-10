@@ -1,0 +1,18 @@
+export const bootLines = [
+  { text: "AFZALBE OS v1.0.0", delay: 0,    color: "user" },
+  { text: "Copyright (c) 2025 AFZALBE OS. All rights reserved.", delay: 80,   color: "muted" },
+  { text: "", delay: 120 },
+  { text: "[  0.000] Initializing kernel...",                 delay: 200,  color: "text" },
+  { text: "[  0.124] Loading system modules...",              delay: 400,  color: "text" },
+  { text: "[  0.341] Mounting virtual filesystem...",         delay: 600,  color: "text" },
+  { text: "[  0.598] Connecting to MongoDB...          OK",   delay: 900,  color: "success" },
+  { text: "[  0.743] Connecting to Redis...             OK",  delay: 1100, color: "success" },
+  { text: "[  0.891] Starting WebSocket server...       OK",  delay: 1300, color: "success" },
+  { text: "[  1.204] Loading portfolio data...",              delay: 1600, color: "text" },
+  { text: "[  1.456] Authenticating terminal session...",     delay: 1900, color: "text" },
+  { text: "[  1.789] Launching shell...",                     delay: 2200, color: "text" },
+  { text: "", delay: 2600 },
+  { text: "Welcome.", delay: 2800, color: "accent" },
+  { text: "Type 'help' to see available commands.", delay: 3000, color: "muted" },
+  { text: "", delay: 3200 },
+]

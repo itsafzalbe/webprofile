@@ -68,7 +68,7 @@ async def update_project(slug: str, data: ProjectUpdate) -> Optional[dict]:
         return None
     
     update_data = data.model_dump(exclude_unset=True)
-    for field, vlaue in update_data.items():
+    for field, value in update_data.items():
         setattr(project, field, value)
     
     project.updated_at = datetime.utcnow()

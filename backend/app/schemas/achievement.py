@@ -25,7 +25,7 @@ class AchievementCreate(BaseModel):
     image_url: Optional[str] = None
 
     skills: list[str] = Field(default_factory=list)
-    issue_date: Optional[datetime] = None
+    issued_date: Optional[datetime] = None
     is_featured: bool = False
     is_hidden: bool = False
 
@@ -41,7 +41,7 @@ class AchievementUpdate(BaseModel):
     image_url: Optional[str] = None
 
     skills: Optional[list[str]] = None
-    issue_date: Optional[datetime] = None
+    issued_date: Optional[datetime] = None
     is_featured: Optional[bool] = None
     is_hidden: Optional[bool] = None
 
@@ -61,7 +61,7 @@ class AchievementResponse(BaseModel):
     image_url: Optional[str]
 
     skills: list[str]
-    issue_date: Optional[str]
+    issued_date: Optional[str]
 
     is_featured: bool
     created_at: datetime
