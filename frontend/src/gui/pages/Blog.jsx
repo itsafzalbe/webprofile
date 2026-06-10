@@ -17,9 +17,18 @@ export default function Blog() {
   const [loading,   setLoading]   = useState(true)
 
   useEffect(() => {
-    getBlogTags().then(d => setTags(Array.isArray(d) ? d : (d.tags || []))).catch(() => {})
-    getPosts().then(d => { setPosts(Array.isArray(d) ? d : []); setLoading(false) }).catch(() => setLoading(false))
-  }, [])
+  getBlogTags()
+    .then(d => {
+      console.log("TAGS:", d)
+      setTags(Array.isArray(d) ? d : (d.tags || []))
+    })
+    .catch(err => console.log("TAG ERR:", err))
+
+  getPosts()
+    .then(d => { 
+      setPosts(d.items || []) 
+      setLoading(false) })
+}, [])
 
   const filtered = activeTag === "all" ? posts : posts.filter(p => p.tags?.includes(activeTag))
 
