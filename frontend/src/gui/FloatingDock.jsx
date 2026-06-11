@@ -81,16 +81,45 @@ function DesktopDock() {
         }}
       >
         {/* Logo */}
+        {/* Logo */}
         <div
           onClick={() => navigate("/gui")}
           style={{
-            width: "26px", height: "26px", borderRadius: "50%",
-            background: t.accent, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: "10px", fontWeight: 800,
-            color: guiTheme === "dark" ? "#000" : "#fff",
-            marginRight: "4px", flexShrink: 0, cursor: "pointer",
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            background: t.pillActive,
+            border: `1px solid ${t.glassBorder}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: "4px",
+            flexShrink: 0,
+            cursor: "pointer",
+            transition: "all 0.15s ease",
           }}
-        >A</div>
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = "scale(1.05)"
+            e.currentTarget.style.opacity = "0.9"
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = "scale(1)"
+            e.currentTarget.style.opacity = "1"
+          }}
+        >
+          <img
+            src={guiTheme === "dark" ? "/star_white.png" : "/star_black.png"}
+            alt="logo"
+            draggable={false}
+            style={{
+              width: "16px",
+              height: "16px",
+              objectFit: "contain",
+              userSelect: "none",
+              pointerEvents: "none",
+            }}
+          />
+        </div>
 
         {/* Sliding hover indicator */}
         <AnimatePresence>
