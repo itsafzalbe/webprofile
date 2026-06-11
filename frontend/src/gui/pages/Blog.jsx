@@ -19,10 +19,8 @@ export default function Blog() {
   useEffect(() => {
   getBlogTags()
     .then(d => {
-      console.log("TAGS:", d)
       setTags(Array.isArray(d) ? d : (d.tags || []))
     })
-    .catch(err => console.log("TAG ERR:", err))
 
   getPosts()
     .then(d => { 

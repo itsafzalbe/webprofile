@@ -1,20 +1,21 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { TOKEN_KEY } from "../utils/constants"
 
 export const useAdminStore = create(
   persist(
     (set, get) => ({
-      token:    null,
-      user:     null,
-      isAdmin:  false,
+      token:   null,
+      user:    null,
+      isAdmin: false,
 
       setAuth: (token, user) => {
-        localStorage.setItem("afzalbe_os_token", token)
+        localStorage.setItem(TOKEN_KEY, token)
         set({ token, user, isAdmin: true })
       },
 
       clearAuth: () => {
-        localStorage.removeItem("afzalbe_os_token")
+        localStorage.removeItem(TOKEN_KEY)
         set({ token: null, user: null, isAdmin: false })
       },
 

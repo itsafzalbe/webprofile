@@ -1,6 +1,46 @@
 import { useEffect, useState } from "react"
 import { adminGetAll, createProject, updateProject, deleteProject } from "../../api/projects"
 
+// ── Shared input styles ───────────────────────────────────────────────────────
+const inputStyle = {
+  width: "100%", background: "rgba(255,255,255,0.03)",
+  border: "1px solid rgba(255,255,255,0.08)", borderRadius: "6px",
+  padding: "8px 12px", color: "#c0caf5", fontSize: "13px",
+  fontFamily: "inherit", outline: "none",
+}
+const labelStyle = {
+  fontSize: "11px", color: "#565f89", display: "block", marginBottom: "4px",
+}
+
+// ── Input component defined OUTSIDE the parent — critical to prevent remount on each keystroke ──
+function Input({ label, field, type, form, setForm }) {
+  const value   = form?.[field] ?? ""
+  const onChange = (e) => setForm(f => ({ ...f, [field]: type === "checkbox" ? e.target.checked : e.target.value }))
+
+  return (
+    <div style={{ marginBottom: "12px" }}>
+      <label style={labelStyle}>{label.toUpperCase()}</label>
+      {type === "textarea" ? (
+        <textarea
+          value={value}
+          onChange={onChange}
+          rows={3}
+          style={{ ...inputStyle, resize: "vertical" }}
+        />
+      ) : type === "checkbox" ? (
+        <input type="checkbox" checked={!!value} onChange={onChange} />
+      ) : (
+        <input
+          type={type || "text"}
+          value={value}
+          onChange={onChange}
+          style={inputStyle}
+        />
+      )}
+    </div>
+  )
+}
+
 export default function Projects() {
   const [items, setItems]   = useState([])
   const [form, setForm]     = useState(null)
@@ -42,29 +82,6 @@ export default function Projects() {
     load()
   }
 
-  const Input = ({ label, field, type = "text" }) => (
-    <div style={{ marginBottom: "12px" }}>
-      <label style={{ fontSize: "11px", color: "#565f89", display: "block", marginBottom: "4px" }}>{label.toUpperCase()}</label>
-      {type === "textarea" ? (
-        <textarea
-          value={form?.[field] || ""}
-          onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
-          rows={3}
-          style={{ width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "6px", padding: "8px 12px", color: "#c0caf5", fontSize: "13px", fontFamily: "inherit", outline: "none", resize: "vertical" }}
-        />
-      ) : type === "checkbox" ? (
-        <input type="checkbox" checked={form?.[field] || false} onChange={e => setForm(f => ({ ...f, [field]: e.target.checked }))} />
-      ) : (
-        <input
-          type={type}
-          value={form?.[field] || ""}
-          onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
-          style={{ width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "6px", padding: "8px 12px", color: "#c0caf5", fontSize: "13px", fontFamily: "inherit", outline: "none" }}
-        />
-      )}
-    </div>
-  )
-
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
@@ -104,14 +121,16 @@ export default function Projects() {
       {form && (
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "24px", maxWidth: "600px" }}>
           <div style={{ fontSize: "14px", fontWeight: 600, color: "#c0caf5", marginBottom: "20px" }}>{form.id ? "Edit Project" : "New Project"}</div>
-          <Input label="Title"            field="title" />
-          <Input label="Slug"             field="slug" />
-          <Input label="Description"      field="description"      type="textarea" />
-          <Input label="Long Description" field="long_description"  type="textarea" />
-          <Input label="Tech Stack (comma separated)" field="tech_stack" />
-          <Input label="Tags (comma separated)"       field="tags" />
-          <Input label="GitHub URL"       field="github_url" />
-          <Input label="Live URL"         field="live_url" />
+
+          <Input label="Title"            field="title"            form={form} setForm={setForm} />
+          <Input label="Slug"             field="slug"             form={form} setForm={setForm} />
+          <Input label="Description"      field="description"      type="textarea" form={form} setForm={setForm} />
+          <Input label="Long Description" field="long_description" type="textarea" form={form} setForm={setForm} />
+          <Input label="Tech Stack (comma separated)" field="tech_stack" form={form} setForm={setForm} />
+          <Input label="Tags (comma separated)"       field="tags"       form={form} setForm={setForm} />
+          <Input label="GitHub URL"       field="github_url"       form={form} setForm={setForm} />
+          <Input label="Live URL"         field="live_url"         form={form} setForm={setForm} />
+
           <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
             <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#888", cursor: "pointer" }}>
               <input type="checkbox" checked={form.is_featured || false} onChange={e => setForm(f => ({ ...f, is_featured: e.target.checked }))} />
@@ -122,6 +141,7 @@ export default function Projects() {
               Published
             </label>
           </div>
+
           <div style={{ display: "flex", gap: "8px" }}>
             <button onClick={handleSave} disabled={saving}
               style={{ padding: "8px 16px", borderRadius: "8px", fontSize: "13px", background: "rgba(125,207,255,0.1)", border: "1px solid rgba(125,207,255,0.2)", color: "#7dcfff", cursor: "pointer" }}>

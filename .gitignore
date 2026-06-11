@@ -1,39 +1,22 @@
-#env
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files - NEVER commit these
 .env
 .env.local
+.env.production
+.env.*.local
 
-#pyhton
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.egg-info/
-dist/
-build/
-.eggs/
+# macOS
+.DS_Store
 
-#virtual env
-venv/
-.venv/
-env/
-
-#ides
+# Editor
 .vscode/
 .idea/
-*.swp
-*.swo
 
-#os
-.DS_Store
-Thumbs.db
-
-#logs
+# Logs
 *.log
-logs/
-
-#staticfiles
-
-
-#docker
-*.override.yml
+npm-debug.log*

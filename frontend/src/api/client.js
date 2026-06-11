@@ -1,6 +1,6 @@
 import axios from "axios"
 
-// Use relative URL in dev so Vite proxy handles it → no CORS.
+// Relative URL → Vite dev proxy handles it (no CORS).
 // In production, set VITE_API_URL to your real backend origin.
 const BASE = import.meta.env.VITE_API_URL || "/api/v1"
 
@@ -10,30 +10,24 @@ const client = axios.create({
   headers: { "Content-Type": "application/json" },
 })
 
+// Token key — single source of truth, matches useAdminStore
+const TOKEN_KEY = "afzalbe_os_token"
 
-// Attach session ID + optional auth token to every request
+// Attach auth token to every request
 client.interceptors.request.use((config) => {
-  try {
-    const raw = localStorage.getItem("afzalbe_os_token")
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      const sessionId = parsed?.state?.sessionId
-      if (sessionId) config.headers["X-Session-ID"] = sessionId
-    }
-  } catch {}
-
-  const token = localStorage.getItem("afzalbe_os_token")
-  if (token) config.headers["Authorization"] = `Bearer ${token}`
-
+  const token = localStorage.getItem(TOKEN_KEY)
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`
+  }
   return config
 })
 
-// Response interceptor — clear token on 401
+// Clear token on 401
 client.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem("afzalbe_os_token")
+      localStorage.removeItem(TOKEN_KEY)
     }
     return Promise.reject(err)
   }

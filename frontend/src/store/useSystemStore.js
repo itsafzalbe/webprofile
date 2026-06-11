@@ -2,7 +2,7 @@ import { create } from "zustand"
 import { BOOT_STORAGE_KEY } from "../utils/constants"
 
 export const useSystemStore = create((set) => ({
-  mode:         "terminal",   // "terminal" | "gui"
+  mode:         "gui",       // default is GUI — terminal is opt-in
   bootComplete: sessionStorage.getItem(BOOT_STORAGE_KEY) === "true",
 
   setMode: (mode) => set({ mode }),
@@ -13,5 +13,5 @@ export const useSystemStore = create((set) => ({
   },
 
   switchToGUI:      () => set({ mode: "gui" }),
-  switchToTerminal: () => set({ mode: "terminal" }),
+  switchToTerminal: () => set({ mode: "terminal", bootComplete: true }),
 }))

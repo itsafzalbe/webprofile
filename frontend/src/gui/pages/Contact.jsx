@@ -87,13 +87,22 @@ export default function Contact() {
 
             {error && <div style={{ fontSize:"12px", color:t.error }}>{error}</div>}
 
-            <button
-              onClick={handleSubmit}
-              disabled={status === "sending"}
-              style={{ ...s.btnPrimary, alignSelf:"flex-start", opacity: status === "sending" ? 0.7 : 1 }}
-            >
-              {status === "sending" ? "Sending…" : "Send message"}
-            </button>
+            <div style={{ display:"flex", gap:"10px", alignItems:"center" }}>
+              <button
+                onClick={handleSubmit}
+                disabled={status === "sending"}
+                style={{ ...s.btnPrimary, alignSelf:"flex-start", opacity: status === "sending" ? 0.7 : 1 }}
+              >
+                {status === "sending" ? "Sending…" : "Send message"}
+              </button>
+              <button
+                onClick={() => { setForm({ name:"", email:"", subject:"", message:"" }); setError("") }}
+                disabled={status === "sending"}
+                style={{ ...s.btnSecondary, alignSelf:"flex-start" }}
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
       )}

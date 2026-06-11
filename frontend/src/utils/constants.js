@@ -1,5 +1,7 @@
-export const API_URL  = import.meta.env.VITE_API_URL  || "http://localhost:8000/api/v1"
-export const WS_URL   = import.meta.env.VITE_WS_URL   || "ws://localhost:8000/api/v1"
+// In dev, leave this unset — the Vite proxy forwards /api/* to localhost:8000.
+// In production, set VITE_API_URL=https://yourdomain.com/api/v1
+export const API_URL = import.meta.env.VITE_API_URL || "/api/v1"
+export const WS_URL  = import.meta.env.VITE_WS_URL  || `ws://${window.location.host}/api/v1`
 
 export const HOME_PATH = "/home/afzalbek"
 
@@ -27,7 +29,9 @@ export const ACHIEVEMENT_KEYS = {
   ALL_COMMANDS:      "all_commands",
 }
 
-export const BOOT_STORAGE_KEY   = "afzalbe_os_booted"
-export const SESSION_STORAGE_KEY = "afzalbe_os_session"
-export const THEME_STORAGE_KEY   = "afzalbe_os_theme"
+// localStorage / sessionStorage keys — one place, no more typos
+export const TOKEN_KEY             = "afzalbe_os_token"
+export const BOOT_STORAGE_KEY      = "afzalbe_os_booted"
+export const SESSION_STORAGE_KEY   = "afzalbe_os_session"
+export const THEME_STORAGE_KEY     = "afzalbe_os_theme"
 export const ACHIEVEMENTS_STORAGE_KEY = "afzalbe_os_achievements"
